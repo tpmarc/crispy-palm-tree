@@ -1,31 +1,35 @@
-import { createClient } from "contentful";
-import { Button } from "ui";
+import { documentToHtmlString, fromContentful, Page } from "@crispy/contentful";
+import { Button } from "@crispy/ui";
+import { GetStaticPropsResult } from "next";
 
-export async function getServerSideProps() {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-  });
+type StaticProps = {
+  page: Page;
+};
 
-  const entries = await client.getEntries({ content_type: "page" });
+export async function getStaticProps(): Promise<
+  GetStaticPropsResult<StaticProps>
+> {
+  const page = await fromContentful().getIndexPage();
 
   return {
     props: {
-      pages: entries.items,
+      page,
     },
   };
 }
 
-export default function Web({ pages }: any) {
+export default function IndexPage({ page }: any) {
+  const { fields, sys } = page;
+
   return (
     <div>
-      <h1>Web</h1>
+      <h1>{fields.title}</h1>
 
-      <ul>
-        {pages.map(({ fields, sys }: any) => {
-          return <li key={sys.id}>{fields.title}</li>;
-        })}
-      </ul>
+      <span
+        dangerouslySetInnerHTML={{
+          __html: documentToHtmlString(fields.content),
+        }}
+      />
 
       <Button />
     </div>
