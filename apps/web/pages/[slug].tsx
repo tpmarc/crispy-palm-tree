@@ -1,30 +1,38 @@
-import { Page, documentToHtmlString, fromContentful } from "@crispy/contentful";
-
-import { Button } from "@crispy/ui";
+import { documentToHtmlString, getPageService } from "@crispy/contentful";
+import { IPage, PageService } from "@crispy/contentful/page";
 import type { GetStaticPropsResult } from "next";
+import { Button } from "@crispy/ui";
+import { getAppLayout } from "@crispy/ui/Layout";
 
-export async function getStaticPaths() {
-  const pages = await fromContentful().getPages();
-  const paths = pages.map(({ fields: { slug } }) => ({
-    params: { slug },
-  }));
+type BySlugProps = {
+  page: IPage;
+};
 
-  return {
-    paths,
-    fallback: false,
-  };
+export default function BySlug({ page }: BySlugProps) {
+  return (
+    <div>
+      <h1>{page.title}</h1>
+
+      <span
+        dangerouslySetInnerHTML={{
+          __html: documentToHtmlString(page.content),
+        }}
+      />
+
+      <Button />
+    </div>
+  );
 }
 
-type StaticProps = {
-  page: Page;
-};
+BySlug.getLayout = getAppLayout;
 
 export async function getStaticProps({
   params,
 }: {
   params: { slug: string };
-}): Promise<GetStaticPropsResult<StaticProps>> {
-  const page = await fromContentful().getPage(params.slug);
+}): Promise<GetStaticPropsResult<BySlugProps>> {
+  const pageService = new PageService();
+  const page = await pageService.getPage(params.slug);
 
   return {
     props: {
@@ -33,20 +41,15 @@ export async function getStaticProps({
   };
 }
 
-export default function PageBySlug({ page }: any) {
-  const { fields, sys } = page;
+export async function getStaticPaths() {
+  const pageService = new PageService();
+  const pages = await pageService.getPages();
+  const paths = pages.map(({ slug }) => ({
+    params: { slug },
+  }));
 
-  return (
-    <div>
-      <h1>{fields.title}</h1>
-
-      <span
-        dangerouslySetInnerHTML={{
-          __html: documentToHtmlString(fields.content),
-        }}
-      />
-
-      <Button />
-    </div>
-  );
+  return {
+    paths,
+    fallback: false,
+  };
 }

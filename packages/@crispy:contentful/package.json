@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@contentful/rich-text-html-renderer": "^15.13.1",
+    "@contentful/rich-text-types": "^15.12.1",
     "contentful": "^9.1.32"
   },
   "devDependencies": {

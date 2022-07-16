@@ -44,6 +44,7 @@ importers:
   packages/@crispy:contentful:
     specifiers:
       '@contentful/rich-text-html-renderer': ^15.13.1
+      '@contentful/rich-text-types': ^15.12.1
       '@types/node': ^17.0.12
       contentful: ^9.1.32
       eslint: ^7.32.0
@@ -53,6 +54,7 @@ importers:
       typescript: ^4.5.2
     dependencies:
       '@contentful/rich-text-html-renderer': 15.13.1
+      '@contentful/rich-text-types': 15.12.1
       contentful: 9.1.32
     devDependencies:
       '@types/node': 17.0.45

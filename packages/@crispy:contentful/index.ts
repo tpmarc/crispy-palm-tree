@@ -1,17 +1,12 @@
 import { ContentfulClientApi, createClient, Entry } from "contentful";
+import { PageService, IPageService } from "./page";
 export { documentToHtmlString } from "@contentful/rich-text-html-renderer";
-
-type PageFields = {
-  title: string;
-  slug: string;
-  content: string;
-};
-
-export type Page = Entry<PageFields>;
 
 let client: ContentfulClientApi;
 
-export const fromContentful = () => {
+export const withClient = (
+  content: (client: ContentfulClientApi) => IPageService
+) => {
   if (!client) {
     client = createClient({
       space: process.env.CONTENTFUL_SPACE_ID!,
@@ -19,26 +14,24 @@ export const fromContentful = () => {
     });
   }
 
-  const getPages = async (): Promise<Entry<PageFields>[]> => {
-    const pages = await client.getEntries<PageFields>({ content_type: "page" });
-    return pages.items;
-  };
-
-  const getPage = async (slug: string): Promise<Entry<PageFields>> => {
-    const { items } = await client.getEntries<PageFields>({
-      content_type: "page",
-      "fields.slug": slug,
-    });
-
-    const [page] = items;
-    return page;
-  };
-
-  const getIndexPage = async (): Promise<Entry<PageFields>> => getPage("index");
-
-  return {
-    getPage,
-    getPages,
-    getIndexPage,
-  };
+  return content(client);
 };
+
+export const getPageService = () => withClient(PageService);
+
+export class ContentfulClient {
+  private static _instance: ContentfulClientApi;
+
+  private constructor() {}
+
+  public static getInstance() {
+    if (!ContentfulClient._instance) {
+      ContentfulClient._instance = createClient({
+        space: process.env.CONTENTFUL_SPACE_ID!,
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
+      });
+    }
+
+    return ContentfulClient._instance;
+  }
+}
