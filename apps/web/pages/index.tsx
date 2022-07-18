@@ -1,7 +1,6 @@
 import { documentToHtmlString } from "@crispy/contentful";
 import { IPage, PageService } from "@crispy/contentful/page";
 import { Button } from "@crispy/ui";
-import { getAppLayout } from "@crispy/ui/Layout";
 import { GetStaticPropsResult } from "next";
 
 type IndexPageProps = {
@@ -10,7 +9,7 @@ type IndexPageProps = {
 
 export default function IndexPage({ page }: IndexPageProps) {
   return (
-    <div>
+    <>
       <h1>{page.title}</h1>
 
       <span
@@ -20,11 +19,9 @@ export default function IndexPage({ page }: IndexPageProps) {
       />
 
       <Button />
-    </div>
+    </>
   );
 }
-
-IndexPage.getLayout = getAppLayout;
 
 export async function getStaticProps(): Promise<
   GetStaticPropsResult<IndexPageProps>

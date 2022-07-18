@@ -1,16 +1,39 @@
-import { NextPage } from "next";
+import {
+  motion,
+  AnimatePresence,
+  LazyMotion,
+  domAnimation,
+} from "framer-motion";
 import { AppProps } from "next/app";
-import { ReactElement, ReactNode } from "react";
+import { Navigation } from "../components/Navigation";
 
-export type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode;
+import "../styles/globals.css";
+import "tailwindcss/tailwind.css";
+
+const variants = {
+  hidden: { opacity: 0, x: -200 },
+  enter: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 200 },
 };
 
-type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout;
-};
+export default function App({ Component, pageProps, router }: AppProps) {
+  return (
+    <LazyMotion features={domAnimation}>
+      <Navigation />
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
-  const getLayout = Component.getLayout || ((page: any) => page);
-  return getLayout(<Component {...pageProps} />);
+      <AnimatePresence exitBeforeEnter>
+        <motion.div
+          layout
+          variants={variants}
+          initial="hidden"
+          animate="enter"
+          exit="exit"
+          transition={{ type: "linear" }}
+          key={router.asPath}
+        >
+          <Component {...pageProps} key={router.asPath} />
+        </motion.div>
+      </AnimatePresence>
+    </LazyMotion>
+  );
 }

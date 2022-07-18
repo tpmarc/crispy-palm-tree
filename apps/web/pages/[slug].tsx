@@ -1,8 +1,7 @@
-import { documentToHtmlString, getPageService } from "@crispy/contentful";
+import { documentToHtmlString } from "@crispy/contentful";
 import { IPage, PageService } from "@crispy/contentful/page";
 import type { GetStaticPropsResult } from "next";
 import { Button } from "@crispy/ui";
-import { getAppLayout } from "@crispy/ui/Layout";
 
 type BySlugProps = {
   page: IPage;
@@ -10,7 +9,7 @@ type BySlugProps = {
 
 export default function BySlug({ page }: BySlugProps) {
   return (
-    <div>
+    <>
       <h1>{page.title}</h1>
 
       <span
@@ -20,11 +19,9 @@ export default function BySlug({ page }: BySlugProps) {
       />
 
       <Button />
-    </div>
+    </>
   );
 }
-
-BySlug.getLayout = getAppLayout;
 
 export async function getStaticProps({
   params,
